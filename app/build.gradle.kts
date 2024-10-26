@@ -91,4 +91,8 @@ dependencies {
 
     // navigation compose
     implementation(libs.androidx.navigation.compose)
+
+    // system ui controller
+    implementation(libs.accompanist.systemuicontroller)
+
 }

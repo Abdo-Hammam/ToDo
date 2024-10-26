@@ -8,7 +8,6 @@ import com.self.todo.navigation.destinations.listComposable
 import com.self.todo.navigation.destinations.taskComposable
 import com.self.todo.ui.viewmodels.SharedViewModel
 import com.self.todo.util.Action
-import com.self.todo.util.constants.LIST_SCREEN
 
 @Composable
 fun SetupNavGraph(

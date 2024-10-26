@@ -1,5 +1,6 @@
 package com.self.todo.ui.screens.list
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,7 +15,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -39,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import com.self.todo.R
 import com.self.todo.components.PriorityItem
 import com.self.todo.data.models.Priority
+import com.self.todo.ui.theme.systemBarDarkColor
+import com.self.todo.ui.theme.systemBarLightColor
 import com.self.todo.ui.viewmodels.SharedViewModel
 import com.self.todo.util.SearchAppBarState
 
@@ -48,7 +50,6 @@ fun ListAppBar(
     searchAppBarState: SearchAppBarState,
     searchTextState: String
 ) {
-    var value by remember { mutableStateOf("") }
     val onValueChanged = { it: String ->
         sharedViewModel.searchTextState.value = it
     }
@@ -94,7 +95,9 @@ fun DefaultAppBar(
             Text(text = "Tasks")
         },
         colors = TopAppBarDefaults.topAppBarColors().copy(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = if(isSystemInDarkTheme()) systemBarDarkColor else systemBarLightColor,
+            titleContentColor = Color.White,
+            actionIconContentColor = Color.White
         ),
         actions = {
 
@@ -205,14 +208,26 @@ fun SearchAppBar(
         colors = TextFieldDefaults.colors().copy(
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
-            focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-            unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer
+            focusedContainerColor = if(isSystemInDarkTheme()) systemBarDarkColor else systemBarLightColor,
+            unfocusedContainerColor = if(isSystemInDarkTheme()) systemBarDarkColor else systemBarLightColor,
+            focusedTrailingIconColor = Color.White,
+            unfocusedTrailingIconColor = Color.White,
+            focusedLeadingIconColor = Color.White,
+            unfocusedLeadingIconColor = Color.White,
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White,
+            focusedLabelColor = Color.White,
+            unfocusedLabelColor = Color.White,
+            focusedPlaceholderColor = Color.White,
+            unfocusedPlaceholderColor = Color.White,
+            cursorColor = Color.White
         ),
         leadingIcon = {
             Icon(
                 imageVector = Icons.Filled.Search,
                 contentDescription = "Search Icon",
-                modifier = Modifier.padding(start = 8.dp)
+                modifier = Modifier
+                    .padding(start = 8.dp)
                     .alpha(.6f)
             )
         },

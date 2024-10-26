@@ -15,3 +15,7 @@ val lowPriorityColor = Color(0xFF00C980)
 val mediumPriorityColor = Color(0xFFFFc114)
 val highPriorityColor = Color(0xFFFF4646)
 val nonePriorityColor = Color(0xFFFFFFFF)
+
+
+val systemBarLightColor = Color(0xFF009688)
+val systemBarDarkColor = Color(0xFF000000)
