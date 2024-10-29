@@ -2,7 +2,7 @@ package com.self.todo.navigation
 
 import androidx.navigation.NavHostController
 import com.self.todo.util.Action
-import com.self.todo.util.constants.LIST_SCREEN
+import com.self.todo.util.Constants.LIST_SCREEN
 
 class Screens(navController: NavHostController) {
     val list: (Action) -> Unit = {action ->
