@@ -95,4 +95,7 @@ dependencies {
     // system ui controller
     implementation(libs.accompanist.systemuicontroller)
 
+    // DataStore
+    implementation(libs.androidx.datastore.preferences.core)
+
 }

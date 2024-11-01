@@ -81,15 +81,24 @@ fun PriorityDropDown(
 
             DropdownMenuItem(text = {
                 PriorityItem(priority = Priority.LOW)
-            }, onClick = { expanded = false })
+            }, onClick = {
+                expanded = false
+                onPrioritySelected(Priority.LOW)
+            })
 
             DropdownMenuItem(text = {
                 PriorityItem(priority = Priority.MEDIUM)
-            }, onClick = { expanded = false })
+            }, onClick = {
+                expanded = false
+                onPrioritySelected(Priority.MEDIUM)
+            })
 
             DropdownMenuItem(text = {
                 PriorityItem(priority = Priority.HIGH)
-            }, onClick = { expanded = false })
+            }, onClick = {
+                expanded = false
+                onPrioritySelected(Priority.HIGH)
+            })
         }
     }
 }

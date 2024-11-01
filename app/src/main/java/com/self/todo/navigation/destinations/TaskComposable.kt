@@ -12,8 +12,8 @@ import androidx.navigation.navArgument
 import com.self.todo.ui.screens.task.TaskScreen
 import com.self.todo.ui.viewmodels.SharedViewModel
 import com.self.todo.util.Action
-import com.self.todo.util.Constants.TASK_ARGUMENT_KEY
-import com.self.todo.util.Constants.TASK_SCREEN
+import com.self.todo.util.Constant.TASK_ARGUMENT_KEY
+import com.self.todo.util.Constant.TASK_SCREEN
 
 fun NavGraphBuilder.taskComposable(
     navigateToListScreen: (Action) -> Unit,
@@ -42,8 +42,9 @@ fun NavGraphBuilder.taskComposable(
         sharedViewModel.getSelectedTask(taskId)
         val selectedTask by sharedViewModel.selectedTask.collectAsState()
 
-        LaunchedEffect(key1 = taskId) {
-            sharedViewModel.updateTaskFields(selectedTask)
+        LaunchedEffect(key1 = selectedTask) {
+            if (selectedTask != null || taskId == -1)
+                sharedViewModel.updateTaskFields(selectedTask)
         }
 
         TaskScreen(

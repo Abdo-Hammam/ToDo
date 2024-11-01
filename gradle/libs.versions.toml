@@ -1,5 +1,6 @@
 [versions]
 agp = "8.5.2"
+datastorePreferencesCore = "1.1.1"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -66,6 +67,9 @@ androidx-datastore-preferences = { module = "androidx.datastore:datastore-prefer
 
 # navigation compose
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+
+# DateStore
+androidx-datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastorePreferencesCore" }
 
 # system ui controller
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }

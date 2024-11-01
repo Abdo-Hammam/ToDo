@@ -21,7 +21,7 @@ fun SetupNavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = "list/${Action.ADD}"
+        startDestination = "list/${Action.NO_ACTION}"
     ) {
 
         listComposable(

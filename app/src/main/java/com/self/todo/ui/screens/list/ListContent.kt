@@ -9,12 +9,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,8 +31,8 @@ fun ListContent(
     tasks: RequestState<List<ToDoTask>>,
     navigateToTaskScreen: (taskId: Int) -> Unit
 ) {
-    if(tasks is RequestState.Success)
-        if(tasks.data.isEmpty()) EmptyContent()
+    if (tasks is RequestState.Success)
+        if (tasks.data.isEmpty()) EmptyContent()
         else DisableTasks(tasks.data, navigateToTaskScreen)
 }
 
@@ -42,13 +45,16 @@ fun DisableTasks(
         modifier = Modifier.padding(8.dp)
     ) {
         items(tasks,
-            key = {task ->
+            key = { task ->
                 task.id
-            }){task ->
+            }) { task ->
             TaskItem(
                 task,
                 navigateToTaskScreen
             )
+            if (tasks.indexOf(task) < tasks.size - 1)
+                HorizontalDivider(thickness = 0.3.dp, color = Color.Gray,
+                    modifier = Modifier.padding(horizontal = 8.dp).alpha(.5f))
         }
     }
 }
@@ -72,9 +78,11 @@ fun TaskItem(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = toDoTask.title,
+                Text(
+                    text = toDoTask.title,
                     style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold)
+                    fontWeight = FontWeight.Bold
+                )
                 Canvas(modifier = Modifier.size(16.dp)) {
                     drawCircle(toDoTask.priority.color)
                 }
@@ -97,7 +105,8 @@ private fun TaskItemPrev() {
             "Do exercise",
             "i will do exercise at 6 AM",
             Priority.MEDIUM
-        ) ) {
+        )
+    ) {
 
     }
 }

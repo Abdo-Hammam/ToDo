@@ -13,9 +13,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import com.self.todo.components.DisplayAlertDialog
 import com.self.todo.data.models.Priority
 import com.self.todo.data.models.ToDoTask
 import com.self.todo.ui.theme.systemBarDarkColor
@@ -27,7 +32,7 @@ fun TaskAppBar(
     selectedTask: ToDoTask?,
     navigateToListScreen: (Action) -> Unit
 ) {
-    if(selectedTask == null)
+    if (selectedTask == null)
         NewTaskAppBar(navigateToListScreen = navigateToListScreen)
     else
         ExistingTaskAppBar(
@@ -97,20 +102,43 @@ fun ExistingTaskAppBar(
             navigationIconContentColor = Color.White
         ),
         title = {
-            Text( text = selectedTask.title,
+            Text(
+                text = selectedTask.title,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis)
+                overflow = TextOverflow.Ellipsis
+            )
         },
         navigationIcon = {
             CloseAction(onCloseClicked = navigateToListScreen)
         },
         actions = {
-            DeleteAction(onDeleteClicked = navigateToListScreen)
-            UpdateAction(onUpdateClicked = navigateToListScreen)
+            ExistingTaskBarActions(
+                selectedTask = selectedTask,
+                navigateToListScreen = navigateToListScreen
+            )
         }
     )
 }
 
+
+@Composable
+fun ExistingTaskBarActions(
+    selectedTask: ToDoTask,
+    navigateToListScreen: (Action) -> Unit
+) {
+    var openAlert by remember { mutableStateOf(false) }
+    DisplayAlertDialog(
+        title = "Remove '${selectedTask.title}'?",
+        message = "Are you sure you want to remove '${selectedTask.title}'?",
+        openDialog = openAlert,
+        closeDialog = { openAlert = false },
+        onYesClicked = {
+            navigateToListScreen(Action.DELETE)
+        })
+
+    DeleteAction(onDeleteClicked = { openAlert = true })
+    UpdateAction(onUpdateClicked = navigateToListScreen)
+}
 
 @Composable
 fun CloseAction(
@@ -138,9 +166,9 @@ fun UpdateAction(
 
 @Composable
 fun DeleteAction(
-    onDeleteClicked: (Action) -> Unit
+    onDeleteClicked: () -> Unit
 ) {
-    IconButton(onClick = { onDeleteClicked(Action.DELETE) }) {
+    IconButton(onClick = { onDeleteClicked() }) {
         Icon(
             imageVector = Icons.Filled.Delete,
             contentDescription = "Back to home Screen"
@@ -151,12 +179,13 @@ fun DeleteAction(
 @Preview
 @Composable
 private fun ExistingTaskPrev() {
-    ExistingTaskAppBar(selectedTask = ToDoTask(
-        id = 0,
-        title = "Gym",
-        description = "",
-        priority = Priority.LOW
-    )
+    ExistingTaskAppBar(
+        selectedTask = ToDoTask(
+            id = 0,
+            title = "Gym",
+            description = "",
+            priority = Priority.LOW
+        )
     ) {
 
     }

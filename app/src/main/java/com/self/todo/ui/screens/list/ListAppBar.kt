@@ -1,5 +1,6 @@
 package com.self.todo.ui.screens.list
 
+import android.widget.Toast
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,39 +33,53 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.self.todo.R
+import com.self.todo.components.DisplayAlertDialog
 import com.self.todo.components.PriorityItem
 import com.self.todo.data.models.Priority
+import com.self.todo.data.models.ToDoTask
 import com.self.todo.ui.theme.systemBarDarkColor
 import com.self.todo.ui.theme.systemBarLightColor
 import com.self.todo.ui.viewmodels.SharedViewModel
+import com.self.todo.util.Action
+import com.self.todo.util.RequestState
 import com.self.todo.util.SearchAppBarState
 
 @Composable
 fun ListAppBar(
     sharedViewModel: SharedViewModel,
     searchAppBarState: SearchAppBarState,
-    searchTextState: String
+    searchTextState: String,
+    allTasks: RequestState<List<ToDoTask?>>
 ) {
+    LaunchedEffect(key1 = searchTextState) {
+        sharedViewModel.getAllTasks()
+    }
     val onValueChanged = { it: String ->
         sharedViewModel.searchTextState.value = it
     }
     val focusRequester = remember { FocusRequester() }
 
-    when(searchAppBarState) {
+    when (searchAppBarState) {
         SearchAppBarState.CLOSED -> {
             DefaultAppBar(
                 onSearchClicked = {
                     sharedViewModel.searchAppBarState.value = SearchAppBarState.OPENED
                 },
                 onSortClicked = {},
-                onDeleteClicked = {}
+
+                onDeleteClicked = {
+                    sharedViewModel.action.value = Action.DELETE_ALL
+                },
+                allTasks = allTasks
             )
         }
+
         else -> {
             SearchAppBar(
                 value = searchTextState,
@@ -88,14 +103,15 @@ fun ListAppBar(
 fun DefaultAppBar(
     onSearchClicked: () -> Unit,
     onSortClicked: (Priority) -> Unit,
-    onDeleteClicked: () -> Unit
+    onDeleteClicked: () -> Unit,
+    allTasks: RequestState<List<ToDoTask?>>
 ) {
     TopAppBar(
         title = {
             Text(text = "Tasks")
         },
         colors = TopAppBarDefaults.topAppBarColors().copy(
-            containerColor = if(isSystemInDarkTheme()) systemBarDarkColor else systemBarLightColor,
+            containerColor = if (isSystemInDarkTheme()) systemBarDarkColor else systemBarLightColor,
             titleContentColor = Color.White,
             actionIconContentColor = Color.White
         ),
@@ -105,7 +121,10 @@ fun DefaultAppBar(
 
             SortAction(onSortClicked = onSortClicked)
 
-            DeleteAction(onDeleteClicked = onDeleteClicked)
+            DeleteAction(
+                onDeleteClicked = onDeleteClicked,
+                allTasks = allTasks
+            )
         }
     )
 }
@@ -162,9 +181,13 @@ fun SortAction(
 
 @Composable
 fun DeleteAction(
-    onDeleteClicked: () -> Unit
+    onDeleteClicked: () -> Unit,
+    allTasks: RequestState<List<ToDoTask?>>
 ) {
     var expanded by remember { mutableStateOf(false) }
+    var openDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
 
     IconButton(onClick = { expanded = true }) {
         Icon(
@@ -176,10 +199,28 @@ fun DeleteAction(
             DropdownMenuItem(text = { Text(text = "Delete All") },
                 onClick = {
                     expanded = false
-                    onDeleteClicked()
+                    if (allTasks is RequestState.Success) {
+                        if (allTasks.data.isEmpty()) Toast.makeText(
+                            context,
+                            "There's No Tasks To Remove!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        else
+                            openDialog = true
+                    }
                 })
         }
     }
+
+    DisplayAlertDialog(
+        title = "Remove All Tasks?",
+        message = "Are you sure you want to remove all Tasks? There is no going back after this action",
+        openDialog = openDialog,
+        closeDialog = { openDialog = false },
+        onYesClicked = {
+            onDeleteClicked()
+            openDialog = false
+        })
 }
 
 
@@ -208,8 +249,8 @@ fun SearchAppBar(
         colors = TextFieldDefaults.colors().copy(
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
-            focusedContainerColor = if(isSystemInDarkTheme()) systemBarDarkColor else systemBarLightColor,
-            unfocusedContainerColor = if(isSystemInDarkTheme()) systemBarDarkColor else systemBarLightColor,
+            focusedContainerColor = if (isSystemInDarkTheme()) systemBarDarkColor else systemBarLightColor,
+            unfocusedContainerColor = if (isSystemInDarkTheme()) systemBarDarkColor else systemBarLightColor,
             focusedTrailingIconColor = Color.White,
             unfocusedTrailingIconColor = Color.White,
             focusedLeadingIconColor = Color.White,
