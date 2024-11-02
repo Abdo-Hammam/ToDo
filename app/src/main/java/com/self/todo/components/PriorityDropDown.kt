@@ -38,7 +38,7 @@ fun PriorityDropDown(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val angle by animateFloatAsState(
-        targetValue = if (expanded) 180f else 0f, label = ""
+        targetValue = if (expanded) 0f else -90f, label = "Hello"
     )
 
     Row(

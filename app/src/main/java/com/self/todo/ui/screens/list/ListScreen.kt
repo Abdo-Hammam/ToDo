@@ -29,11 +29,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.self.todo.R
-import com.self.todo.data.models.ToDoTask
 import com.self.todo.ui.theme.systemBarLightColor
 import com.self.todo.ui.viewmodels.SharedViewModel
 import com.self.todo.util.Action
-import com.self.todo.util.RequestState
 import com.self.todo.util.SearchAppBarState
 import kotlinx.coroutines.launch
 
@@ -45,13 +43,16 @@ fun ListScreen(
 ) {
     LaunchedEffect(key1 = true) {
         sharedViewModel.getAllTasks()
+        sharedViewModel.readSortState()
     }
 
     val allTasks by sharedViewModel.allTasks.collectAsState()
-
     val searchedTasks by sharedViewModel.searchedTasks.collectAsState()
 
-    val isTasksEmpty = allTasks
+    val sortState by sharedViewModel.sortState.collectAsState()
+    val lowPriorityTasks by sharedViewModel.lowPriorityTasks.collectAsState()
+    val highPriorityTasks by sharedViewModel.highPriorityTasks.collectAsState()
+
 
     val searchAppBarState: SearchAppBarState by sharedViewModel.searchAppBarState
     val searchTextState: String by sharedViewModel.searchTextState
@@ -59,6 +60,7 @@ fun ListScreen(
     val action by sharedViewModel.action
 
     val snackBarHostState = remember { SnackbarHostState() }
+
     DisplaySnackBar(
         snackBarHostState = snackBarHostState,
         handleDatabaseAction = { sharedViewModel.handleDatabaseActions(action = action) },
@@ -93,6 +95,13 @@ fun ListScreen(
         ) {
             ListContent(
                 tasks = if (sharedViewModel.searchTextState.value.isNotEmpty()) searchedTasks else allTasks,
+                lowPriorityTasks = lowPriorityTasks,
+                highPriorityTasks = highPriorityTasks,
+                sortState = sortState,
+                onSwipeToDelete = { action, task ->
+                    sharedViewModel.action.value = action
+                    sharedViewModel.updateTaskFields(task)
+                },
                 navigateToTaskScreen = navigateToTaskScreen
             )
         }
@@ -140,7 +149,7 @@ fun DisplaySnackBar(
         if (action != Action.NO_ACTION && action != Action.UNDO) {
             scope.launch {
                 val snackBarResult = snackBarHostState.showSnackbar(
-                    message = when(action) {
+                    message = when (action) {
                         Action.ADD -> "New Task Added: $taskTitle"
                         Action.DELETE -> "Task Deleted"
                         Action.UPDATE -> "Task Updated"

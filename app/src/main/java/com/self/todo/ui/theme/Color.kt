@@ -14,7 +14,7 @@ val Pink40 = Color(0xFF7D5260)
 val lowPriorityColor = Color(0xFF00C980)
 val mediumPriorityColor = Color(0xFFFFc114)
 val highPriorityColor = Color(0xFFFF4646)
-val nonePriorityColor = Color(0xFFFFFFFF)
+val nonePriorityColor = Color(0xFFA3A3A3)
 
 
 val systemBarLightColor = Color(0xFF009688)
