@@ -1,33 +1,32 @@
 package com.self.todo.navigation.destinations
 
-import android.util.Log
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
+import androidx.navigation.toRoute
+import com.self.todo.navigation.Screen
 import com.self.todo.ui.screens.list.ListScreen
 import com.self.todo.ui.viewmodels.SharedViewModel
-import com.self.todo.util.Constant.LIST_ARGUMENT_KEY
-import com.self.todo.util.Constant.LIST_SCREEN
-import com.self.todo.util.toAction
+import com.self.todo.util.Action
 
 fun NavGraphBuilder.listComposable(
     navigateToTaskScreen: (Int) -> Unit,
-    sharedViewModel: SharedViewModel
+    sharedViewModel: SharedViewModel,
+    startScreenVisited: Boolean
 ) {
 
-    composable(
-        route = LIST_SCREEN,
-        arguments = listOf(navArgument(LIST_ARGUMENT_KEY) {
-            type = NavType.StringType
-        }),
+    var startScreen = startScreenVisited
+    composable<Screen.List>(
         enterTransition = {
-            slideIntoContainer(
+            if (!startScreen) null else slideIntoContainer(
                 AnimatedContentTransitionScope.SlideDirection.Right,
-                tween(500)
+                tween(350)
             )
         },
         exitTransition = {
@@ -36,18 +35,32 @@ fun NavGraphBuilder.listComposable(
                 tween(500)
             )
         }
-    ) {navBackStackEntry ->
+    ) { navBackStackEntry ->
 
-        val action = navBackStackEntry.arguments!!.getString(LIST_ARGUMENT_KEY).toAction()
-        LaunchedEffect(key1 = action) {
-            sharedViewModel.action.value = action
+
+        val action = navBackStackEntry.toRoute<Screen.List>().action
+
+        var myAction by rememberSaveable { mutableStateOf(Action.NO_ACTION) }
+
+        LaunchedEffect(key1 = myAction) {
+            if (action != myAction) {
+                myAction = action
+                sharedViewModel.updateAction(action)
+            }
+        }
+        val databaseAction = sharedViewModel.action
+
+        LaunchedEffect(key1 = true) {
+            startScreen = true
         }
 
         ListScreen(
+            action = databaseAction,
             navigateToTaskScreen,
             sharedViewModel
         )
 
     }
+
 
 }

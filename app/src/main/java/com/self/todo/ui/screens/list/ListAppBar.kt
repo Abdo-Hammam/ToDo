@@ -76,7 +76,7 @@ fun ListAppBar(
                 },
 
                 onDeleteClicked = {
-                    sharedViewModel.action.value = Action.DELETE_ALL
+                    sharedViewModel.updateAction(Action.DELETE_ALL)
                 },
                 allTasks = allTasks
             )
@@ -153,29 +153,39 @@ fun SortAction(
         )
         DropdownMenu(expanded = expanded,
             onDismissRequest = { expanded = false }) {
-            DropdownMenuItem(text = {
-                PriorityItem(priority = Priority.LOW)
-            },
-                onClick = {
-                    expanded = false
-                    onSortClicked(Priority.LOW)
-                })
 
-            DropdownMenuItem(text = {
-                PriorityItem(priority = Priority.HIGH)
-            },
-                onClick = {
-                    expanded = false
-                    onSortClicked(Priority.HIGH)
-                })
-
-            DropdownMenuItem(text = {
-                PriorityItem(priority = Priority.NONE)
-            },
-                onClick = {
-                    expanded = false
-                    onSortClicked(Priority.NONE)
-                })
+            Priority.entries.toTypedArray().slice(setOf(0,2,3)).forEach { priority ->
+                DropdownMenuItem(text = {
+                    PriorityItem(priority = priority)
+                },
+                    onClick = {
+                        expanded = false
+                        onSortClicked(priority)
+                    })
+            }
+//            DropdownMenuItem(text = {
+//                PriorityItem(priority = Priority.LOW)
+//            },
+//                onClick = {
+//                    expanded = false
+//                    onSortClicked(Priority.LOW)
+//                })
+//
+//            DropdownMenuItem(text = {
+//                PriorityItem(priority = Priority.HIGH)
+//            },
+//                onClick = {
+//                    expanded = false
+//                    onSortClicked(Priority.HIGH)
+//                })
+//
+//            DropdownMenuItem(text = {
+//                PriorityItem(priority = Priority.NONE)
+//            },
+//                onClick = {
+//                    expanded = false
+//                    onSortClicked(Priority.NONE)
+//                })
         }
     }
 }

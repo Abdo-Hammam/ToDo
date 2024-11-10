@@ -53,7 +53,7 @@ fun ToDoTheme(
 
     val systemUiController = rememberSystemUiController()
     SideEffect {
-        systemUiController.setSystemBarsColor(
+        systemUiController.setStatusBarColor(
             color = if(darkTheme) systemBarDarkColor else systemBarLightColor
         )
     }

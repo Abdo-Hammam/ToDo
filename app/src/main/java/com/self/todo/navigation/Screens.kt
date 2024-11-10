@@ -1,17 +1,25 @@
 package com.self.todo.navigation
 
-import androidx.navigation.NavHostController
 import com.self.todo.util.Action
-import com.self.todo.util.Constant.LIST_SCREEN
+import kotlinx.serialization.Serializable
 
-class Screens(navController: NavHostController) {
-    val list: (Action) -> Unit = {action ->
-        navController.navigate("list/${action.name}") {
-            popUpTo(LIST_SCREEN) {inclusive = true}
-        }
-    }
+//class Screens(navController: NavHostController) {
+//    val list: (Action) -> Unit = {action ->
+//        navController.navigate("list/${action.name}") {
+//            popUpTo(LIST_SCREEN) {inclusive = true}
+//        }
+//    }
+//
+//    val task: (Int) -> Unit = {taskId ->
+//        navController.navigate("task/$taskId")
+//    }
+//}
 
-    val task: (Int) -> Unit = {taskId ->
-        navController.navigate("task/$taskId")
-    }
+
+@Serializable
+sealed class Screen {
+    @Serializable
+    data class List(val action: Action = Action.NO_ACTION): Screen()
+    @Serializable
+    data class Task(val id: Int): Screen()
 }

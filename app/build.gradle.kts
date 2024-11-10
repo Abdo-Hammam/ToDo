@@ -1,9 +1,11 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("kotlin-kapt")
+//    id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
+    kotlin("plugin.serialization") version "2.0.21"
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.0"
 }
 
 android {
@@ -52,9 +54,9 @@ android {
     }
 }
 
-kapt {
-    correctErrorTypes = true
-}
+//kapt {
+//    correctErrorTypes = true
+//}
 
 dependencies {
 
@@ -76,8 +78,8 @@ dependencies {
 
     // Dagger - hilt
     implementation(libs.hilt.android)
-    kapt (libs.hilt.android.compiler)
-    kapt(libs.androidx.hilt.compiler)
+    ksp (libs.hilt.android.compiler)
+    ksp(libs.androidx.hilt.compiler)
 
     // Room & viewModel
     implementation(libs.androidx.room.runtime)
@@ -97,5 +99,11 @@ dependencies {
 
     // DataStore
     implementation(libs.androidx.datastore.preferences.core)
+
+    // Splash Screen
+    implementation(libs.androidx.core.splashscreen)
+
+    // Kotlin Serialization
+    implementation(libs.kotlinx.serialization.json)
 
 }

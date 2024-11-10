@@ -1,6 +1,10 @@
 package com.self.todo.ui.screens.list
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,9 +29,11 @@ import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,6 +49,8 @@ import com.self.todo.data.models.ToDoTask
 import com.self.todo.ui.theme.highPriorityColor
 import com.self.todo.util.Action
 import com.self.todo.util.RequestState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun ListContent(
@@ -112,12 +120,21 @@ fun DisableTasks(
                         isDismissed = true
                         true
                     } else false
+                },
+                positionalThreshold = { value ->
+                    value * .6f
                 }
             )
             val dismissDirection = dismissState.dismissDirection
 
             if (isDismissed && dismissDirection == SwipeToDismissBoxValue.EndToStart) {
-                onSwipeToDelete(Action.DELETE, task)
+                val scope = rememberCoroutineScope()
+                LaunchedEffect(key1 = true) {
+                    scope.launch {
+                        delay(300)
+                        onSwipeToDelete(Action.DELETE, task)
+                    }
+                }
             }
 
             val degrees by animateFloatAsState(
@@ -125,19 +142,38 @@ fun DisableTasks(
                 label = ""
             )
 
+            var itemVisible by remember { mutableStateOf(false) }
+            LaunchedEffect(key1 = true) {
+                itemVisible = true
+            }
 
 
-            SwipeToDismissBox(
-                state = dismissState,
-                enableDismissFromEndToStart = true,
-                backgroundContent = { DeleteBackground(degrees = degrees,
-                    dismissState = dismissState) },
-
-                ) {
-                TaskItem(
-                    task,
-                    navigateToTaskScreen
+            AnimatedVisibility(
+                visible = itemVisible && !isDismissed,
+                enter = expandVertically(
+                    animationSpec = tween(300)
+                ),
+                exit = shrinkVertically(
+                    animationSpec = tween(300)
                 )
+            ) {
+                SwipeToDismissBox(
+                    state = dismissState,
+                    enableDismissFromEndToStart = true,
+                    backgroundContent = {
+                        DeleteBackground(
+                            degrees = degrees,
+                            dismissState = dismissState
+                        )
+                    },
+                    enableDismissFromStartToEnd = false,
+
+                    ) {
+                    TaskItem(
+                        task,
+                        navigateToTaskScreen
+                    )
+                }
             }
 
             if (tasks.indexOf(task) < tasks.size - 1)

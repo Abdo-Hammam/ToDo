@@ -1,9 +1,10 @@
 package com.self.todo.ui.viewmodels
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.self.todo.data.models.Priority
@@ -29,7 +30,8 @@ class SharedViewModel @Inject constructor(
     private val dataStoreRepo: DataStoreRepository
 ) : ViewModel() {
 
-    val action: MutableState<Action> = mutableStateOf(Action.NO_ACTION)
+    var action by mutableStateOf(Action.NO_ACTION)
+        private set
 
     private val id: MutableState<Int> = mutableIntStateOf(0)
     val title: MutableState<String> = mutableStateOf("")
@@ -63,7 +65,7 @@ class SharedViewModel @Inject constructor(
     private val _sortState = MutableStateFlow<RequestState<Priority>>(RequestState.Idle)
     val sortState: StateFlow<RequestState<Priority>> = _sortState
 
-    fun readSortState() {
+    private fun readSortState() {
         _sortState.value = RequestState.Loading
         try {
             viewModelScope.launch {
@@ -113,6 +115,11 @@ class SharedViewModel @Inject constructor(
         }
     }
 
+    init {
+        getAllTasks()
+        readSortState()
+    }
+
     private var _selectedTask: MutableStateFlow<ToDoTask?> = MutableStateFlow(null)
     val selectedTask: StateFlow<ToDoTask?> = _selectedTask
 
@@ -158,7 +165,6 @@ class SharedViewModel @Inject constructor(
     }
 
     fun handleDatabaseActions(action: Action) {
-                Log.d("TAG", "handleDatabaseActions: ${this.action.value}")
         when (action) {
             Action.ADD -> {
                 addTask()
@@ -184,7 +190,6 @@ class SharedViewModel @Inject constructor(
 
             }
         }
-        this.action.value = Action.NO_ACTION
     }
 
 
@@ -200,6 +205,10 @@ class SharedViewModel @Inject constructor(
             description.value = ""
             priority.value = Priority.LOW
         }
+    }
+
+    fun updateAction(newAction: Action) {
+        action = newAction
     }
 
     fun validateFields(): Boolean {

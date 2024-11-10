@@ -79,26 +79,14 @@ fun PriorityDropDown(
             expanded = expanded,
             onDismissRequest = { expanded = false }) {
 
-            DropdownMenuItem(text = {
-                PriorityItem(priority = Priority.LOW)
-            }, onClick = {
-                expanded = false
-                onPrioritySelected(Priority.LOW)
-            })
-
-            DropdownMenuItem(text = {
-                PriorityItem(priority = Priority.MEDIUM)
-            }, onClick = {
-                expanded = false
-                onPrioritySelected(Priority.MEDIUM)
-            })
-
-            DropdownMenuItem(text = {
-                PriorityItem(priority = Priority.HIGH)
-            }, onClick = {
-                expanded = false
-                onPrioritySelected(Priority.HIGH)
-            })
+            Priority.entries.toTypedArray().slice(0..2).forEach { priority ->
+                DropdownMenuItem(text = {
+                    PriorityItem(priority = priority)
+                }, onClick = {
+                    expanded = false
+                    onPrioritySelected(priority)
+                })
+            }
         }
     }
 }
